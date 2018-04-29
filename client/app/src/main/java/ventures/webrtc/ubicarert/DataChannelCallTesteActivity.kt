@@ -1,22 +1,22 @@
-package ventures.webrtc.webrtcroulette
+package ventures.webrtc.ubicarert
 
 import android.content.Context
 import android.content.pm.PackageManager
 import android.media.AudioManager
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
+import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.ImageButton
 import android.widget.TextView
 import org.webrtc.RendererCommon
 import org.webrtc.SurfaceViewRenderer
-import ventures.webrtc.webrtcroulette.videocall.VideoCallSession
-import ventures.webrtc.webrtcroulette.videocall.VideoCallStatus
-import ventures.webrtc.webrtcroulette.videocall.VideoRenderers
+import ventures.webrtc.ubicarert.webrtc.VideoCallSession
+import ventures.webrtc.ubicarert.webrtc.VideoCallStatus
+import ventures.webrtc.ubicarert.webrtc.VideoRenderers
 
-class VideoCallActivity : AppCompatActivity() {
+class DataChannelCallTesteActivity: AppCompatActivity() {
 
     private var videoSession : VideoCallSession? = null
     private var statusTextView: TextView? = null
@@ -117,6 +117,6 @@ class VideoCallActivity : AppCompatActivity() {
     companion object {
         private val CAMERA_AUDIO_PERMISSION_REQUEST = 1
         private val TAG = "VideoCallActivity"
-        private val BACKEND_URL = "ws://HOST:8000/" // Change HOST to your server's IP if you want to test
+        private val BACKEND_URL = "ws://192.168.15.8:4433/" // Change HOST to your server's IP if you want to test
     }
 }

@@ -1,8 +1,8 @@
-package ventures.webrtc.webrtcroulette.videocall
+package ventures.webrtc.ubicarert.webrtc
 
 /**
-* Created by Rafael on 01-18-18.
-*/
+ * Created by Rafael on 01-18-18.
+ */
 
 import android.content.Context
 import android.os.Build
@@ -10,7 +10,7 @@ import android.util.Log
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.webrtc.*
-import ventures.webrtc.webrtcroulette.R
+import ventures.webrtc.ubicarert.R
 import java.util.concurrent.Executors
 
 enum class VideoCallStatus(val label: Int, val color: Int) {
@@ -24,9 +24,9 @@ enum class VideoCallStatus(val label: Int, val color: Int) {
 
 data class VideoRenderers(private val localView: SurfaceViewRenderer?, private val remoteView: SurfaceViewRenderer?) {
     val localRenderer: (VideoRenderer.I420Frame) -> Unit =
-        if(localView == null) this::sink else { f -> localView.renderFrame(f) }
+            if(localView == null) this::sink else { f -> localView.renderFrame(f) }
     val remoteRenderer: (VideoRenderer.I420Frame) -> Unit =
-        if(remoteView == null) this::sink else { f -> remoteView.renderFrame(f) }
+            if(remoteView == null) this::sink else { f -> remoteView.renderFrame(f) }
 
     private fun sink(frame: VideoRenderer.I420Frame) {
         Log.w("VideoRenderer", "Missing surface view, dropping frame")

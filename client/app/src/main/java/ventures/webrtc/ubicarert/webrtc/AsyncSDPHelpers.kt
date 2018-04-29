@@ -1,4 +1,4 @@
-package ventures.webrtc.webrtcroulette.videocall
+package ventures.webrtc.ubicarert.webrtc
 
 import org.webrtc.SdpObserver
 import org.webrtc.SessionDescription

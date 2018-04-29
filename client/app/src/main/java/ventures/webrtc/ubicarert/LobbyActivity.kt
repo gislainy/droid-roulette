@@ -1,4 +1,4 @@
-package ventures.webrtc.webrtcroulette
+package ventures.webrtc.ubicarert
 
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
@@ -15,11 +15,23 @@ class LobbyActivity : AppCompatActivity() {
         connectButton.setOnClickListener {
             startVideoCall()
         }
+        val DataButton: Button = findViewById(R.id.data_button)
+        DataButton.setOnClickListener {
+            startDataChannelCall()
+        }
+
 
     }
 
     private fun startVideoCall() {
         startActivity(Intent(this, VideoCallActivity::class.java))
     }
+
+    private fun startDataChannelCall() {
+        startActivity(Intent(this, DataChannelCallTesteActivity::class.java))
+    }
+//    private fun startDataChannelCall() {
+//        startActivity(Intent(this, DataChannelCallActivity::class.java))
+//    }
 
 }
