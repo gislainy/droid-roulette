@@ -7,6 +7,7 @@
   "private": false,
   "scripts": {
     "start": "nodemon --watch src --exec ts-node src/index.ts"
+
   },
   "devDependencies": {
     "@types/uuid": "^3.4.3",

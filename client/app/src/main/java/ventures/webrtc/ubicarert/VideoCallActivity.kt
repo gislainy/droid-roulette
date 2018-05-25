@@ -87,10 +87,9 @@ class VideoCallActivity :  AppCompatActivity() {
     }
 
 
-
     companion object {
         private val CAMERA_AUDIO_PERMISSION_REQUEST = 1
         private val TAG = "VideoCallActivity"
-        private val BACKEND_URL = "ws://192.168.15.8:4433/" // Change HOST to your server's IP if you want to test
+        private val BACKEND_URL ="ws://192.168.15.8:7000/" // Change HOST to your server's IP if you want to test
     }
 }

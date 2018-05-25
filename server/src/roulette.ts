@@ -39,7 +39,8 @@ type ClientMessage
 
 type Session = {
   id: string
-  ws: WebSocket
+  ws: WebSocket,
+  
   peer?: string
 }
 

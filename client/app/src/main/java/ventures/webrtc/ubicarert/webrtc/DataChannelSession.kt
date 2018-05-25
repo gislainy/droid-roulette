@@ -118,6 +118,8 @@ class DataChannelSession (
         sendChannel = peerConnection?.createDataChannel("createDataChannel", DataChannel.Init());
         sendChannel?.registerObserver(localDataChannelObserver);
         onSendCb(sendChannel);
+
+        signaler.sendMonitor("teste");
 //        sendMessage();
 
     }
@@ -296,7 +298,6 @@ class DataChannelSession (
             client.dispatcher().executorService().shutdown()
             return session
         }
-
         private val TAG = "DataChannelSession"
         private val executor = Executors.newSingleThreadExecutor()
     }
