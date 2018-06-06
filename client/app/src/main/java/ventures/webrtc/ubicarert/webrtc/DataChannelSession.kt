@@ -31,6 +31,9 @@ class DataChannelSession (
         private val onStatusChangedListener: (CallStatus) -> Unit,
         private val signaler: SignalingWebSocket)  {
 
+    private var listaPeerConnection: MutableList<PeerConnection?> = mutableListOf();
+    private var listaDataChannel: MutableList<DataChannel?> = mutableListOf();
+    private var listaReceiveChannel: MutableList<DataChannel?> = mutableListOf();
     private var peerConnection : PeerConnection? = null
     private var factory : PeerConnectionFactory? = null
     private var isOfferingPeer = false
@@ -93,7 +96,7 @@ class DataChannelSession (
     init {
         signaler.messageHandler = this::onMessage
         this.onStatusChangedListener(CallStatus.MATCHING)
-        executor.execute(this::init)
+        //executor.execute(this::init)
     }
 
     private fun init() {
@@ -115,11 +118,14 @@ class DataChannelSession (
         rtcCfg.continualGatheringPolicy = PeerConnection.ContinualGatheringPolicy.GATHER_CONTINUALLY
         val rtcEvents = SimpleRTCEventHandler(this::handleLocalIceCandidate, this::addRemoteStream, this::removeRemoteStream, this::handleDataChannel)
         peerConnection = factory?.createPeerConnection(rtcCfg, constraints, rtcEvents)
+        listaPeerConnection.add(peerConnection);
         sendChannel = peerConnection?.createDataChannel("createDataChannel", DataChannel.Init());
         sendChannel?.registerObserver(localDataChannelObserver);
+        listaDataChannel.add(sendChannel);
         onSendCb(sendChannel);
+        start()
 
-        signaler.sendMonitor("teste");
+//        signaler.sendMonitor("teste");
 //        sendMessage();
 
     }
@@ -129,6 +135,7 @@ class DataChannelSession (
 
     private fun maybeCreateOffer() {
         if(isOfferingPeer) {
+            peerConnection = listaPeerConnection.lastOrNull();
             peerConnection?.createOffer(SDPCreateCallback(this::createDescriptorCallback), MediaConstraints())
         }
     }
@@ -152,6 +159,7 @@ class DataChannelSession (
         Log.i(TAG, "Got remote ICE candidate $strCandidate")
         executor.execute {
             val candidate = IceCandidate(id, label, strCandidate)
+            peerConnection = listaPeerConnection.lastOrNull();
             peerConnection?.addIceCandidate(candidate)
         }
     }
@@ -167,6 +175,7 @@ class DataChannelSession (
     }
 
     private fun handleRemoteDescriptor(sdp: String) {
+        peerConnection = listaPeerConnection.lastOrNull();
         if(isOfferingPeer) {
             peerConnection?.setRemoteDescription(SDPSetCallback({ setError ->
                 if(setError != null) {
@@ -185,6 +194,7 @@ class DataChannelSession (
     }
 
     private fun createDescriptorCallback(result: SDPCreateResult) {
+        peerConnection = listaPeerConnection.lastOrNull();
         when(result) {
             is SDPCreateSuccess -> {
                 peerConnection?.setLocalDescription(SDPSetCallback({ setResult ->
@@ -201,7 +211,7 @@ class DataChannelSession (
             is MatchMessage -> {
                 onStatusChangedListener(CallStatus.CONNECTING)
                 isOfferingPeer = message.offer
-                start()
+                executor.execute(this::init)
             }
             is SDPMessage -> {
                 handleRemoteDescriptor(message.sdp)
@@ -218,6 +228,7 @@ class DataChannelSession (
     private fun handleDataChannel(dataChannel: DataChannel) {
         receiveChannel = dataChannel;
         receiveChannel?.registerObserver(DataChannelObserver);
+        listaReceiveChannel.add(receiveChannel);
 //        sendMessage();
     }
     internal var DataChannelObserver: DataChannel.Observer = object : DataChannel.Observer{
@@ -277,8 +288,10 @@ class DataChannelSession (
     fun terminate() {
         signaler.close()
 
-
-        peerConnection?.dispose()
+        listaPeerConnection.forEach {
+            it?.dispose()
+        }
+//        peerConnection?.dispose()
 
         factory?.dispose()
 

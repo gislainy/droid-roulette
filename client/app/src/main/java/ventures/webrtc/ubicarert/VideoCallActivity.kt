@@ -11,6 +11,7 @@ import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import org.webrtc.DataChannel
+import org.webrtc.PeerConnection
 import org.webrtc.RendererCommon
 import org.webrtc.SurfaceViewRenderer
 import ventures.webrtc.ubicarert.webrtc.*
@@ -24,6 +25,7 @@ class VideoCallActivity :  AppCompatActivity() {
     private var statusConnection: TextView? = null
     private var channel: DataChannel? = null
 
+    private var listaChannel: MutableList<DataChannel?> = mutableListOf();
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_message)
@@ -73,13 +75,15 @@ class VideoCallActivity :  AppCompatActivity() {
     }
     private fun sendMessage() {
         val textLocal = localTextView?.text;
-        if (channel?.state() == DataChannel.State.OPEN) {
-            val buffer = ByteBuffer.wrap(textLocal.toString().toByteArray())
-            channel?.send(DataChannel.Buffer(buffer, false))
+        listaChannel.forEach {
+            if (it?.state() == DataChannel.State.OPEN) {
+                val buffer = ByteBuffer.wrap(textLocal.toString().toByteArray())
+                it?.send(DataChannel.Buffer(buffer, false))
+            }
         }
     }
     private fun onSendCb(chan: DataChannel?) {
-        if(chan != null) channel = chan;
+        if(chan != null) listaChannel.add(chan);
     }
     private fun startVideoSession() {
         dataChannelSession = DataChannelSession.connect(this, BACKEND_URL, this::onMesasge, this::onSendCb, this::onStatusChanged)
@@ -90,6 +94,6 @@ class VideoCallActivity :  AppCompatActivity() {
     companion object {
         private val CAMERA_AUDIO_PERMISSION_REQUEST = 1
         private val TAG = "VideoCallActivity"
-        private val BACKEND_URL ="ws://192.168.15.8:7000/" // Change HOST to your server's IP if you want to test
+        private val BACKEND_URL ="ws://192.168.15.24:7000/" // Change HOST to your server's IP if you want to test
     }
 }
