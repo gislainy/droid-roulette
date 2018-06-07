@@ -1,9 +1,11 @@
 package ventures.webrtc.ubicarert
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.media.AudioManager
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.util.Log
@@ -16,6 +18,10 @@ import org.webrtc.RendererCommon
 import org.webrtc.SurfaceViewRenderer
 import ventures.webrtc.ubicarert.webrtc.*
 import java.nio.ByteBuffer
+import java.time.LocalDateTime
+import java.util.*
+import java.util.*
+import kotlin.concurrent.schedule
 
 class VideoCallActivity :  AppCompatActivity() {
 
@@ -24,8 +30,8 @@ class VideoCallActivity :  AppCompatActivity() {
     private var remoteTextView: TextView? = null
     private var statusConnection: TextView? = null
     private var channel: DataChannel? = null
-
     private var listaChannel: MutableList<DataChannel?> = mutableListOf();
+    private var jaEnviouDados: Boolean = false;
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_message)
@@ -44,6 +50,16 @@ class VideoCallActivity :  AppCompatActivity() {
         }
 
         startVideoSession()
+//        Timer().scheduleAtFixedRate(object : TimerTask() {
+//            override fun run() {
+//                Log.i("tag", "A Kiss every 1 seconds")
+//                enviarDados();
+//            }
+//        }, 0, 10000)]
+        Handler().postDelayed({
+            enviarDados()
+        }, 1000)
+
     }
 
     override fun onDestroy() {
@@ -69,8 +85,23 @@ class VideoCallActivity :  AppCompatActivity() {
 
     private fun onMesasge(string: String) {
         runOnUiThread {
-            val textRemote = remoteTextView?.text
             remoteTextView?.text = string
+        }
+    }
+    private fun enviarDados() {
+        runOnUiThread {
+            val text = Date();
+            listaChannel.forEach {
+                if (it?.state() == DataChannel.State.OPEN) {
+                    val buffer = ByteBuffer.wrap(text.toString().toByteArray())
+                    it.send(DataChannel.Buffer(buffer, false))
+                    remoteTextView?.text = "Estou enviando == " + text.toString()
+                    Handler().postDelayed({
+                        enviarDados()
+                    }, 1000)
+                    jaEnviouDados = true;
+                }
+            }
         }
     }
     private fun sendMessage() {
@@ -78,12 +109,16 @@ class VideoCallActivity :  AppCompatActivity() {
         listaChannel.forEach {
             if (it?.state() == DataChannel.State.OPEN) {
                 val buffer = ByteBuffer.wrap(textLocal.toString().toByteArray())
-                it?.send(DataChannel.Buffer(buffer, false))
+                it.send(DataChannel.Buffer(buffer, false))
             }
         }
     }
     private fun onSendCb(chan: DataChannel?) {
-        if(chan != null) listaChannel.add(chan);
+        if(chan != null) {
+            listaChannel.add(chan);
+            if(!jaEnviouDados)
+                enviarDados()
+        };
     }
     private fun startVideoSession() {
         dataChannelSession = DataChannelSession.connect(this, BACKEND_URL, this::onMesasge, this::onSendCb, this::onStatusChanged)

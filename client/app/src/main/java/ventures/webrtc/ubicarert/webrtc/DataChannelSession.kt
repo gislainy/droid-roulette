@@ -40,13 +40,6 @@ class DataChannelSession (
     private val eglBase = EglBase.create()
     private var sendChannel: DataChannel? = null
     private var receiveChannel: DataChannel? = null
-    private var localMessageReceived = " "
-    private var remoteMessageReceived = " "
-
-    private var localLastMessageReceived = " "
-    private var remoteLastMessageReceived = " "
-
-
 
     val renderContext: EglBase.Context
         get() = eglBase.eglBaseContext
@@ -124,10 +117,6 @@ class DataChannelSession (
         listaDataChannel.add(sendChannel);
         onSendCb(sendChannel);
         start()
-
-//        signaler.sendMonitor("teste");
-//        sendMessage();
-
     }
     private fun start() {
         executor.execute(this::maybeCreateOffer)
@@ -229,7 +218,6 @@ class DataChannelSession (
         receiveChannel = dataChannel;
         receiveChannel?.registerObserver(DataChannelObserver);
         listaReceiveChannel.add(receiveChannel);
-//        sendMessage();
     }
     internal var DataChannelObserver: DataChannel.Observer = object : DataChannel.Observer{
         override fun onBufferedAmountChange(l: Long) {
@@ -291,8 +279,12 @@ class DataChannelSession (
         listaPeerConnection.forEach {
             it?.dispose()
         }
-//        peerConnection?.dispose()
-
+        listaDataChannel.forEach {
+            it?.dispose()
+        }
+        listaReceiveChannel.forEach {
+            it?.dispose()
+        }
         factory?.dispose()
 
         eglBase.release()
