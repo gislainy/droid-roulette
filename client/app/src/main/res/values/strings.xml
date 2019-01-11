@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Droid Roulette</string>
+    <string name="app_name">WebRTC Antigo</string>
     <string name="status_unknown">Unknown</string>
     <string name="status_connecting">Connecting …</string>
     <string name="status_connected">Connected!</string>

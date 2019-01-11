@@ -1,27 +1,15 @@
 package ventures.webrtc.ubicarert
-import android.annotation.SuppressLint
-import android.content.Context
-import android.content.pm.PackageManager
-import android.media.AudioManager
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
-import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.util.Log
 import android.widget.Button
-import android.widget.ImageButton
 import android.widget.TextView
 import org.webrtc.DataChannel
-import org.webrtc.PeerConnection
-import org.webrtc.RendererCommon
-import org.webrtc.SurfaceViewRenderer
 import ventures.webrtc.ubicarert.webrtc.*
 import java.nio.ByteBuffer
-import java.time.LocalDateTime
 import java.util.*
-import java.util.*
-import kotlin.concurrent.schedule
 
 class VideoCallActivity :  AppCompatActivity() {
 
@@ -50,12 +38,6 @@ class VideoCallActivity :  AppCompatActivity() {
         }
 
         startVideoSession()
-//        Timer().scheduleAtFixedRate(object : TimerTask() {
-//            override fun run() {
-//                Log.i("tag", "A Kiss every 1 seconds")
-//                enviarDados();
-//            }
-//        }, 0, 10000)]
         Handler().postDelayed({
             enviarDados()
         }, 1000)
@@ -105,6 +87,7 @@ class VideoCallActivity :  AppCompatActivity() {
         }
     }
     private fun sendMessage() {
+        
         val textLocal = localTextView?.text;
         listaChannel.forEach {
             if (it?.state() == DataChannel.State.OPEN) {
